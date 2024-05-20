@@ -1,0 +1,39 @@
+---
+title: "Effect of evening light on sleep"
+---
+
+# Introduction
+
+Mathematical modeling can help us understand how evening light affects our sleep. Throughout this document we use the [`Skeldon23()`](https://arcascope.github.io/circadian/api/models.html#skeldon23) model from the [`circadian`](https://github.com/Arcascope/circadian) package. The model tells us how the circadian state and sleep homeostat evolve over time. The only input to the model is the light received at each timepoint:
+
+```{python}
+#| fig-cap: "Light schedule"
+
+import numpy as np
+import matplotlib.pyplot as plt
+from circadian.lights import LightSchedule
+
+dt = 0.01 # hours
+time = np.arange(0, 48, dt)
+schedule = LightSchedule.Regular(1000.0, 6.0, 22.0)
+light = schedule(time)
+
+plt.plot(time, light)
+plt.xlabel('Time (hours)')
+plt.ylabel('Light intensity')
+plt.show()
+```
+
+```{python}
+#| fig-cap: "Circadian state"
+
+from circadian.models import Skeldon23
+model = Skeldon23()
+trajectory = model.integrate(time, input=light)
+x = trajectory.states[:, 0]
+
+plt.plot(time, x)
+plt.xlabel('Time (hours)')
+plt.ylabel('Circadian state (a.u.)')
+plt.show()
+```

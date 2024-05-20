@@ -1,0 +1,27 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Effect of evening light on sleep"
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - href: index.qmd
+        text: "Home"
+      - href: methods.qmd
+        text: "Methods"
+      - href: simulation_result.qmd
+        text: "Simulation results"
+      - href: about.qmd
+        text: "About"
+
+format:
+  html:
+    theme: minty
+    css: styles.css
+    toc: true
+
+
+
