@@ -1,0 +1,12 @@
+{
+  "hash": "77f2fc58046baf8970a703312a32cece",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: Skeldon23 parameter exploration\nformat:\n  html:\n    code-fold: true\nexecute:\n  freeze: auto\n---\n\nWIP\n\n",
+    "supporting": [
+      "skeldon23_parameter_exploration_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}
