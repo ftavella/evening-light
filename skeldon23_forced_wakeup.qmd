@@ -1,0 +1,9 @@
+---
+title: "Skeldon23 model forced wake up implementation"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+WIP

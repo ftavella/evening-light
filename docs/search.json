@@ -1,12 +1,35 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Effect of evening light on sleep",
+    "objectID": "skeldon23_forced_wakeup.html",
+    "href": "skeldon23_forced_wakeup.html",
+    "title": "Skeldon23 model forced wake up implementation",
     "section": "",
-    "text": "Introduction\nMathematical modeling can help us understand how evening light affects our sleep. Throughout this document we use the Skeldon23() model from the circadian package. The model tells us how the circadian state and sleep homeostat evolve over time. The only input to the model is the light received at each timepoint:\n\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom circadian.lights import LightSchedule\n\ndt = 0.01 # hours\ntime = np.arange(0, 48, dt)\nschedule = LightSchedule.Regular(1000.0, 6.0, 22.0)\nlight = schedule(time)\n\nplt.plot(time, light)\nplt.xlabel('Time (hours)')\nplt.ylabel('Light intensity')\nplt.show()\n\n\n\n\nLight schedule\n\n\n\n\n\nfrom circadian.models import Skeldon23\nmodel = Skeldon23()\ntrajectory = model.integrate(time, input=light)\nx = trajectory.states[:, 0]\n\nplt.plot(time, x)\nplt.xlabel('Time (hours)')\nplt.ylabel('Circadian state (a.u.)')\nplt.show()\n\n\n\n\nCircadian state",
+    "text": "WIP",
     "crumbs": [
-      "Home"
+      "Sleep model",
+      "Forced wake-up"
+    ]
+  },
+  {
+    "objectID": "melatonin_hilaire07.html",
+    "href": "melatonin_hilaire07.html",
+    "title": "MelatoninHilaire07 model",
+    "section": "",
+    "text": "WIP: Most recent simulation\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom circadian.lights import LightSchedule\nfrom circadian.models import MelatoninHilaire07\n\nschedule = LightSchedule.Regular(1000.0, 8.0, 16.0)\ndt = 0.01 # hours\ntime = np.arange(0, 24 * 5, dt)\nlight = schedule(time)\nmodel = MelatoninHilaire07(params={'a': 10.0, 'delta': 1000.0, 'r': 1000.0, 'betaIP': 1.0, 'betaCP': 1.0})\ntrajectory = model.integrate(time, input=light)\n\nx = trajectory.states[:, 0]\nxc = trajectory.states[:, 1]\nH1 = trajectory.states[:, 3]\nH2 = trajectory.states[:, 4]\nphase = np.arctan2(xc, x)\nfig, axs = plt.subplots(4, 1, sharex=True, figsize=(12, 8))\n# x and xc\naxs[0].plot(time, x, label='x')\naxs[0].plot(time, xc, label='xc')\naxs[0].legend()\n# phase\naxs[1].plot(time, phase, label='Phase')\naxs[1].axhline(y=model.phi_on, color='gray', linestyle='--')\naxs[1].axhline(y=model.phi_off, color='gray', linestyle='--')\naxs[1].legend()\n# on/off term\nplaces_on_1 = np.where(phase &lt; model.phi_on)\nplaces_on_2 = np.where(phase &gt; model.phi_off)\nsynthesis_on = np.zeros_like(phase)\nsynthesis_on[places_on_1] = 1.0\nsynthesis_on[places_on_2] = 1.0\naxs[2].plot(time, synthesis_on, label='Melatonin synthesis on')\naxs[2].legend()\n# melatonin\naxs[3].plot(time, H1, label='Pineal melatonin')\naxs[3].plot(time, H2, label='Plasma melatonin')\naxs[3].legend()\naxs[3].set_xlabel('Time (hours)')\nplt.show()",
+    "crumbs": [
+      "Melatonin suppression model",
+      "Melatonin suppression model"
+    ]
+  },
+  {
+    "objectID": "chang14_light_schedule.html",
+    "href": "chang14_light_schedule.html",
+    "title": "Light schedule computations",
+    "section": "",
+    "text": "Chang14 light schedule implementation\nLoad light schedules (calculated using the calculate_light_schedules.py script).\n\n\nCode\nimport numpy as np\n\ndata_location = 'data/light_schedules/'\n\nlight_schedule_time = np.load(data_location + 'time.npy')\nregular_light = np.load(data_location + 'regular_light.npy')\nchang14_ebook_first_light = np.load(data_location + 'chang14_ebook_first_light.npy')\nchang14_ebook_second_light = np.load(data_location + 'chang14_ebook_second_light.npy')\n\n\n\n\nCode\nimport matplotlib.pyplot as plt\n\nplt.figure(1)\nplt.plot(light_schedule_time, chang14_ebook_first_light)\nplt.figure(2)\nplt.plot(light_schedule_time, chang14_ebook_first_light)\nplt.show()",
+    "crumbs": [
+      "Chang et al. 2014",
+      "Light schedule"
     ]
   },
   {
@@ -20,13 +43,46 @@
     ]
   },
   {
-    "objectID": "methods.html",
-    "href": "methods.html",
-    "title": "Quarto Basics",
+    "objectID": "chang14_experimental_results.html",
+    "href": "chang14_experimental_results.html",
+    "title": "Chang et al. 2014",
     "section": "",
-    "text": "For a demonstration of a line plot on a polar axis, see Figure 1.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nr = np.arange(0, 2, 0.01)\ntheta = 2 * np.pi * r\nfig, ax = plt.subplots(\n  subplot_kw = {'projection': 'polar'} \n)\nax.plot(theta, r)\nax.set_rticks([0.5, 1, 1.5, 2])\nax.grid(True)\nplt.show()\n\n\n\n\n\n\n\n\nFigure 1: A line plot on a polar axis",
+    "text": "Main article findings and results to be replicated\nWIP: Plots that we intend to reproduce from the paper.\n\n\n\nFigure 1: Light schedule\n\n\n\n\n\nFigure 2: Phase shift\n\n\n\n\n\nFigure 3: Sleep",
     "crumbs": [
-      "Methods"
+      "Chang et al. 2014",
+      "Experimental results"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Effect of evening light on sleep",
+    "section": "",
+    "text": "Introduction\nMathematical modeling can help us understand how evening light affects our sleep. Throughout this document we use the Skeldon23() model from the circadian package. The model tells us how the circadian state and sleep homeostat evolve over time. The only input to the model is the light received at each timepoint:\n\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom circadian.lights import LightSchedule\n\ndt = 0.01 # hours\ntime = np.arange(0, 48, dt)\nschedule = LightSchedule.Regular(1000.0, 6.0, 22.0)\nlight = schedule(time)\n\nplt.plot(time, light)\nplt.xlabel('Time (hours)')\nplt.ylabel('Light intensity')\nplt.show()\n\n\n\n\nLight schedule\n\n\n\n\n\nfrom circadian.models import Skeldon23\nmodel = Skeldon23()\ntrajectory = model.integrate(time, input=light)\nx = trajectory.states[:, 0]\n\nplt.plot(time, x)\nplt.xlabel('Time (hours)')\nplt.ylabel('Circadian state (a.u.)')\nplt.show()\n\n\n\n\nCircadian state",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "melatonin_hilaire07_on_chang14.html",
+    "href": "melatonin_hilaire07_on_chang14.html",
+    "title": "MelatoninHilaire07 under Chang14 light schedule",
+    "section": "",
+    "text": "MelatoninHilaire07 under Chang14 light schedule\nWIP",
+    "crumbs": [
+      "Melatonin suppression model",
+      "Simulations on Chang14 light schedule"
+    ]
+  },
+  {
+    "objectID": "skeldon23_on_chang14.html",
+    "href": "skeldon23_on_chang14.html",
+    "title": "Skeldon23 model on Chang14 light schedule",
+    "section": "",
+    "text": "WIP",
+    "crumbs": [
+      "Sleep model",
+      "Simulations on Chang14 light schedule"
     ]
   }
 ]

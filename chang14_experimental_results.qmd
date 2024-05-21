@@ -1,0 +1,17 @@
+---
+title: "Chang et al. 2014"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+# Main article findings and results to be replicated
+
+WIP: Plots that we intend to reproduce from the paper.
+
+![Figure 1: Light schedule](assets/chang14_fig1.png)
+
+![Figure 2: Phase shift](assets/chang14_fig2.png)
+
+![Figure 3: Sleep](assets/chang14_fig3AC.png)

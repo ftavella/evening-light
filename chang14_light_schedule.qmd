@@ -1,0 +1,21 @@
+---
+title: "Chang14 light schedule implementation"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+# Chang14 light schedule implementation
+
+{{< include _light_schedules.qmd >}}
+
+```{python}
+import matplotlib.pyplot as plt
+
+plt.figure(1)
+plt.plot(light_schedule_time, chang14_ebook_first_light)
+plt.figure(2)
+plt.plot(light_schedule_time, chang14_ebook_first_light)
+plt.show()
+```

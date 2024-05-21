@@ -1,0 +1,12 @@
+{
+  "hash": "067c293d7353cdfcf27f2ae32bc9e428",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: MelatoninHilaire07 model\nformat:\n  html:\n    code-fold: true\nexecute:\n  freeze: auto\n---\n\nWIP: Most recent simulation\n\n::: {#12f2ff4b .cell execution_count=1}\n``` {.python .cell-code}\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom circadian.lights import LightSchedule\nfrom circadian.models import MelatoninHilaire07\n\nschedule = LightSchedule.Regular(1000.0, 8.0, 16.0)\ndt = 0.01 # hours\ntime = np.arange(0, 24 * 5, dt)\nlight = schedule(time)\nmodel = MelatoninHilaire07(params={'a': 10.0, 'delta': 1000.0, 'r': 1000.0, 'betaIP': 1.0, 'betaCP': 1.0})\ntrajectory = model.integrate(time, input=light)\n\nx = trajectory.states[:, 0]\nxc = trajectory.states[:, 1]\nH1 = trajectory.states[:, 3]\nH2 = trajectory.states[:, 4]\nphase = np.arctan2(xc, x)\nfig, axs = plt.subplots(4, 1, sharex=True, figsize=(12, 8))\n# x and xc\naxs[0].plot(time, x, label='x')\naxs[0].plot(time, xc, label='xc')\naxs[0].legend()\n# phase\naxs[1].plot(time, phase, label='Phase')\naxs[1].axhline(y=model.phi_on, color='gray', linestyle='--')\naxs[1].axhline(y=model.phi_off, color='gray', linestyle='--')\naxs[1].legend()\n# on/off term\nplaces_on_1 = np.where(phase < model.phi_on)\nplaces_on_2 = np.where(phase > model.phi_off)\nsynthesis_on = np.zeros_like(phase)\nsynthesis_on[places_on_1] = 1.0\nsynthesis_on[places_on_2] = 1.0\naxs[2].plot(time, synthesis_on, label='Melatonin synthesis on')\naxs[2].legend()\n# melatonin\naxs[3].plot(time, H1, label='Pineal melatonin')\naxs[3].plot(time, H2, label='Plasma melatonin')\naxs[3].legend()\naxs[3].set_xlabel('Time (hours)')\nplt.show()\n```\n\n::: {.cell-output .cell-output-display}\n![](melatonin_hilaire07_files/figure-html/cell-2-output-1.png){width=943 height=651}\n:::\n:::\n\n\n",
+    "supporting": [
+      "melatonin_hilaire07_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

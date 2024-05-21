@@ -1,0 +1,18 @@
+---
+title: "Light schedule computations"
+execute:
+  echo: false
+---
+
+Load light schedules (calculated using the `calculate_light_schedules.py` script).
+
+```{python}
+import numpy as np
+
+data_location = 'data/light_schedules/'
+
+light_schedule_time = np.load(data_location + 'time.npy')
+regular_light = np.load(data_location + 'regular_light.npy')
+chang14_ebook_first_light = np.load(data_location + 'chang14_ebook_first_light.npy')
+chang14_ebook_second_light = np.load(data_location + 'chang14_ebook_second_light.npy')
+```

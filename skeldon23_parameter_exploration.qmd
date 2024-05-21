@@ -1,5 +1,5 @@
 ---
-title: "Simulations"
+title: "Skeldon23 parameter exploration"
 format:
   html:
     code-fold: true
