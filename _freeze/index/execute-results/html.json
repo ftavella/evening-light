@@ -1,0 +1,12 @@
+{
+  "hash": "1886677cf67a9c2be2e11e258db418bb",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Effect of evening light on sleep\"\nformat: \n    html:\n        code-fold: true\nexecute: \n  freeze: auto\n---\n\n# Introduction\n\nMathematical modeling can help us understand how evening light affects our sleep. Throughout this document we use the [`Skeldon23()`](https://arcascope.github.io/circadian/api/models.html#skeldon23) model from the [`circadian`](https://github.com/Arcascope/circadian) package. The model tells us how the circadian state and sleep homeostat evolve over time. The only input to the model is the light received at each timepoint:\n\n::: {#70a69671 .cell execution_count=1}\n``` {.python .cell-code}\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom circadian.lights import LightSchedule\n\ndt = 0.01 # hours\ntime = np.arange(0, 48, dt)\nschedule = LightSchedule.Regular(1000.0, 6.0, 22.0)\nlight = schedule(time)\n\nplt.plot(time, light)\nplt.xlabel('Time (hours)')\nplt.ylabel('Light intensity')\nplt.show()\n```\n\n::: {.cell-output .cell-output-display}\n![Light schedule](index_files/figure-html/cell-2-output-1.png){width=606 height=429}\n:::\n:::\n\n\n::: {#e36d3871 .cell execution_count=2}\n``` {.python .cell-code}\nfrom circadian.models import Skeldon23\nmodel = Skeldon23()\ntrajectory = model.integrate(time, input=light)\nx = trajectory.states[:, 0]\n\nplt.plot(time, x)\nplt.xlabel('Time (hours)')\nplt.ylabel('Circadian state (a.u.)')\nplt.show()\n```\n\n::: {.cell-output .cell-output-display}\n![Circadian state](index_files/figure-html/cell-3-output-1.png){width=605 height=429}\n:::\n:::\n\n\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

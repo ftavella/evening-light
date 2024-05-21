@@ -1,5 +1,10 @@
 ---
 title: "Effect of evening light on sleep"
+format: 
+    html:
+        code-fold: true
+execute: 
+  freeze: auto
 ---
 
 # Introduction

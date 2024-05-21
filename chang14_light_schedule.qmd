@@ -16,6 +16,6 @@ import matplotlib.pyplot as plt
 plt.figure(1)
 plt.plot(light_schedule_time, chang14_ebook_first_light)
 plt.figure(2)
-plt.plot(light_schedule_time, chang14_ebook_first_light)
+plt.plot(light_schedule_time, chang14_ebook_second_light)
 plt.show()
 ```

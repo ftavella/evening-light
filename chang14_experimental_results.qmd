@@ -3,7 +3,6 @@ title: "Chang et al. 2014"
 format:
   html:
     code-fold: true
-jupyter: python3
 ---
 
 # Main article findings and results to be replicated
