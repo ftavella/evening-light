@@ -31,7 +31,7 @@ We implemented the melatonin supression model from Breslow et al. 2013 [@breslow
 The circadian part of the model is given by:
 
 $$
-\frac{dn}{dt} = \alpha (1-n) - \beta n
+\frac{dn}{dt} = 60 \left[ \alpha (1-n) - \beta n \right]
 $$
 
 where
