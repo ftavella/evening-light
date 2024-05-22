@@ -26,9 +26,9 @@ website:
             text: "Simulations on Chang14 light schedule"
       - section: "Melatonin suppression model"
         contents:
-          - href: melatonin_hilaire07.qmd
+          - href: melatonin_breslow13.qmd
             text: "Melatonin suppression model"
-          - href: melatonin_hilaire07_on_chang14.qmd
+          - href: melatonin_breslow13_on_chang14.qmd
             text: "Simulations on Chang14 light schedule"
       - href: about.qmd
         text: "About"

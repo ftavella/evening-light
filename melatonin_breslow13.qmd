@@ -1,0 +1,176 @@
+---
+title: "Breslow13 model"
+format:
+  html:
+    code-fold: true
+    grid:
+      margin-width: 100px
+jupyter: python3
+execute:
+  freeze: auto
+bibliography: references.bib
+margin-width: 100px
+---
+
+```{python}
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+from circadian.lights import LightSchedule
+from circadian.models import Breslow13
+
+schedule = LightSchedule.Regular(1000.0, lights_on=8.0, lights_off=24.0)
+dt = 0.01 # hours
+time = np.arange(0, 24 * 5, dt)
+light = schedule(time)
+```
+
+
+We implemented the melatonin supression model from Breslow et al. 2013 [@breslow_mathematical_2013] that expands and improves a previous model [@st_hilaire_physiologically_2007]. 
+The circadian part of the model is given by:
+
+$$
+\frac{dn}{dt} = \alpha (1-n) - \beta n
+$$
+
+where
+
+$$
+\alpha = \alpha_0 \left( \frac{I}{I_0} \right)^p \frac{I}{I + I_1}
+$$
+
+> 🚨 In the article, the multiplication by 60 on $\frac{dn}{dt}$ is missing
+
+$$
+\frac{dx}{dt} = \frac{1}{\kappa} \left[ x_c + \gamma \left( \frac{x}{3} + \frac{4x}{3} - \frac{256}{105} x^7 \right) + B + \eta M \right]
+$$
+
+$$
+\frac{dx_c}{dt} = \frac{1}{\kappa} \left\{ \frac{B x_c}{3} - x \left[\left( \frac{24}{f \tau_c} \right)^2  + K B \right] - \xi M \right\}
+$$
+
+> 🚨 In the article, the brackets after $-x$ are missing, which is not correct based on `Hilaire07` and `Jewett00` from `circadian`
+
+where 
+
+$$
+M = \frac{M_{\text{max}}}{1 + \exp(\frac{H_{\text{sat} - H_2}}{\sigma})}
+$$
+
+Melatonin dynamics are given by
+
+$$
+\frac{dH_{1}}{dt} = - \beta_{IP} H_{1} + A(\phi) (1 - mB) S(H1, B)
+$$
+
+$$
+\frac{dH_{2}}{dt} = \beta_{IP} H_{1} - \beta_{CP} H_{2} + \beta_{AP} H_{3}
+$$
+
+$$
+\frac{dH_{3}}{dt} = - \beta_{AP} H_{3}
+$$
+
+where $H_{1}$ is the pineal melatonin, $H_{2}$ is the plasma melatonin, and $H_{3}$ is the exogenous melatonin. Also
+
+$$
+\phi = \tan^{-1} \left( \frac{x}{x_c} \right)
+$$
+
+> 🚨 Note that this is different from [@st_hilaire_physiologically_2007; @abeysuriya_unified_2018] where they do $\tan^{-1}(x_c/x)$.  
+
+$$
+S(H_1, B) =  
+\begin{cases}
+  0 & \text{if} \ \ \ H_1 < 0.001 \ \ \text{and} \ \ (1 - mB) < 0 \\
+  1 & \text{otherwise}
+\end{cases}
+$$
+
+the latter being a function to avoid negative values of $H_1$ for sudden spikes in light. Melatonin synthesis is given by
+
+$$
+A(\phi) = 
+\begin{cases}
+  a\left[ \frac{1 - e^{-\delta M_{2\pi}(\phi_{\text{on} - \phi})}}{1 - e^{-\delta M_{2\pi}(\phi_{\text{on}} - \phi_{\text{off}})}} \right] & \text{if} \ \ \ \phi < \phi_{\text{on}} \ \ \ \ \text{and} \ \ \ \ \phi > \phi_{\text{off}} \\
+  ae^{-r M_{2\pi}(\phi_{\text{on} - \phi_{\text{off}}})} & \text{if} \ \ \  \phi_{\text{on}} < \phi < \phi_{\text{off}}
+\end{cases}
+$$
+
+where $M_{2\pi}$ is the modulo function. 
+
+> 🚨 The value of the parameter $K$ is not on the article but it can be taken to be 0.55 based on `Jewet99` and `Hilaire07`
+
+> 🚨 Parameters on the paper are given in units of seconds. So we have to convert them to hours to match all the previous models on `circadian`. We multiplied $\beta_{IP}$, $\beta_{CP}$, $\beta_{AP}$, and $a$ by 3600.
+
+> 🚨 Phase thresholds on the paper are given outside the range $[-\pi, \pi]$ but our phase calculation lies within that range. So we do $\hat{\phi_{\text{on}}} = \phi_{\text{on}} - 2\pi$ (same for $\phi_{\text{off}}$)
+
+
+
+```{python}
+#| label: simulation
+#| fig-cap: "Model simulation"
+#| out-width: 100% 
+
+model = Breslow13()
+trajectory = model.integrate(time, input=light)
+
+x = trajectory.states[:, 0]
+xc = trajectory.states[:, 1]
+H1 = trajectory.states[:, 3]
+H2 = trajectory.states[:, 4]
+phase = np.arctan2(x, xc)
+
+fig, axs = plt.subplots(3, 1, sharex=True, figsize=(12, 8))
+
+# x, xc, and light
+p_x = axs[0].plot(time, x, label='x')
+p_xc = axs[0].plot(time, xc, label='xc')
+light_changes = np.diff(light)
+light_on = np.where(light_changes > 0)[0]
+light_off = np.where(light_changes < 0)[0]
+light_off = np.append(light_off, len(light) - 1)
+for on, off in zip(light_on, light_off):
+    axs[0].axvspan(time[on], time[off], color='yellow', alpha=0.4)
+yellow_patch = plt.Rectangle((0, 0), 1, 1, fc="yellow", alpha=0.4)
+axs[0].legend([p_x[0], p_xc[0], yellow_patch], ['x', 'xc', 'Light'],
+              loc='upper left')
+axs[0].set_ylabel('Circadian state (a.u.)')
+
+# phase
+axs[1].plot(time, phase, label='Phase')
+axs[1].axhline(y=model.phi_on, color='gray', linestyle='--',)
+axs[1].axhline(y=model.phi_off, color='gray', linestyle='--',)
+places_on_1 = phase < model.phi_on
+places_on_2 = phase > model.phi_off
+places_on = np.where(np.logical_and(places_on_1,
+                                    places_on_2))[0]
+synthesis_on = np.zeros_like(phase)
+synthesis_on[places_on] = 1.0
+synthesis_changes = np.diff(synthesis_on)
+on_places = np.where(synthesis_changes > 0)[0]
+off_places = np.where(synthesis_changes < 0)[0]
+for on, off in zip(on_places, off_places):
+    axs[1].axvspan(time[on], time[off], color='gray', alpha=0.4)
+for on, off in zip(light_on, light_off):
+    axs[1].axvspan(time[on], time[off], color='yellow', alpha=0.4)
+gray_patch = plt.Rectangle((0, 0), 1, 1, fc="gray", alpha=0.4)
+axs[1].legend([gray_patch], ['Synthesis on'], loc='upper left')
+axs[1].set_ylabel('Phase ' + r'$(\tan^{-1}(x/x_c))$')
+axs[1].set_yticks(np.linspace(-np.pi, np.pi, 5))
+axs[1].set_yticklabels(['$-\pi$', '$-\pi/2$', '0', '$\pi/2$', '$\pi$'])
+
+# melatonin
+axs[2].plot(time, H1, label='Pineal')
+axs[2].plot(time, H2, label='Plasma')
+for on, off in zip(light_on, light_off):
+    axs[2].axvspan(time[on], time[off], color='yellow', alpha=0.4)
+axs[2].legend(loc='upper left')
+axs[2].set_xlabel('Time (hours)')
+axs[2].set_ylabel('Melatonin (pmol/L)')
+plt.show()
+```
+
+
+> 🚨 We are getting really low values of peak melatonin (based on [@st_hilaire_physiologically_2007] it should be more around 300). We need to find out why.
