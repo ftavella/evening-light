@@ -1,12 +1,6 @@
----
-title: "Light schedule computations"
-execute:
-  echo: false
----
-
-Load light schedules (calculated using the `calculate_light_schedules.py` script).
-
 ```{python}
+#| echo: false
+# Load light schedules (calculated using the `calculate_light_schedules.py` script).
 import numpy as np
 
 data_location = 'data/light_schedules/'
