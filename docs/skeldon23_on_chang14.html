@@ -232,7 +232,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#difference-in-sleep-onset-between-book-and-ebook-days" id="toc-difference-in-sleep-onset-between-book-and-ebook-days" class="nav-link active" data-scroll-target="#difference-in-sleep-onset-between-book-and-ebook-days">Difference in sleep onset between book and ebook days</a></li>
+  <li><a href="#phase-shift-between-book-and-ebook-days" id="toc-phase-shift-between-book-and-ebook-days" class="nav-link" data-scroll-target="#phase-shift-between-book-and-ebook-days">Phase shift between book and ebook days</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -257,7 +264,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Load light schedules (calculated using the <code>calculate_light_schedules.py</code> script).</p>
-<div id="01712502" class="cell" data-execution_count="1">
+<div id="bc5330ad" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -270,204 +277,116 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>chang14_ebook_second_light <span class="op">=</span> np.load(data_location <span class="op">+</span> <span class="st">'chang14_ebook_second_light.npy'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="9e6e0be3" class="cell" data-execution_count="2">
+<p>After doing simulations for 125 parameter sets:</p>
+<div id="e19b6da9" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> circadian.models <span class="im">import</span> Skeldon23</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>time <span class="op">=</span> light_schedule_time <span class="co">#TODO: Clean this up</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: Implement these functions on `circadian`</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> circadian_modulation_of_sleep(model, trajectory_states):</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> trajectory_states[:, <span class="dv">0</span>]</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    xc <span class="op">=</span> trajectory_states[:, <span class="dv">1</span>]</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    linear_term <span class="op">=</span> model.c20 <span class="op">+</span> model.alpha21 <span class="op">*</span> xc <span class="op">+</span> model.alpha22 <span class="op">*</span> x</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    quadratic_term <span class="op">=</span> model.beta21 <span class="op">*</span> xc <span class="op">*</span> xc <span class="op">+</span> model.beta22 <span class="op">*</span> xc <span class="op">*</span> x <span class="op">+</span> model.beta23 <span class="op">*</span> x <span class="op">*</span> x</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    C <span class="op">=</span> linear_term <span class="op">+</span> quadratic_term</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> C</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> H_thresholds(model, trajectory_states):</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    C <span class="op">=</span> circadian_modulation_of_sleep(model, trajectory_states)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    H_plus <span class="op">=</span> model.H0 <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> model.Delta <span class="op">+</span> model.ca <span class="op">*</span> C</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    H_minus <span class="op">=</span> model.H0 <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> model.Delta <span class="op">+</span> model.ca <span class="op">*</span> C </span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> H_plus, H_minus</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Load selected parameters</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>selected_parameters <span class="op">=</span> pd.read_csv(<span class="st">'data/parameter_exploration/selected_parameters.csv'</span>, index_col<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the bedtime for each day</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>sleep_onset_data <span class="op">=</span> pd.DataFrame()</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> reading_condition <span class="kw">in</span> [<span class="st">'ebook_first'</span>, <span class="st">'ebook_second'</span>]:</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx <span class="kw">in</span> selected_parameters.index:</span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>            data <span class="op">=</span> np.load(<span class="ss">f'data/skeldon23_on_chang14/chang14_simulation_</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">.npz'</span>, allow_pickle<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span>:</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        regular_sleep <span class="op">=</span> data[<span class="st">'regular_sleep'</span>]</span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>        chang14_sleep <span class="op">=</span> data[<span class="ss">f'</span><span class="sc">{</span>reading_condition<span class="sc">}</span><span class="ss">_sleep'</span>]</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        regular_sleep_changes <span class="op">=</span> np.where(np.diff(regular_sleep) <span class="op">==</span> <span class="dv">1</span>)[<span class="dv">0</span>]</span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        chang14_sleep_changes <span class="op">=</span> np.where(np.diff(chang14_sleep) <span class="op">==</span> <span class="dv">1</span>)[<span class="dv">0</span>]</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>        regular_sleep_changes_time <span class="op">=</span> time[regular_sleep_changes]</span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        chang14_sleep_changes_time <span class="op">=</span> time[chang14_sleep_changes]</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        <span class="co"># don't count last day's sleep onset</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        regular_sleep_changes_time <span class="op">=</span> regular_sleep_changes_time[:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        chang14_sleep_changes_time <span class="op">=</span> chang14_sleep_changes_time[:<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        data_subset <span class="op">=</span> {</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>            <span class="st">'idx'</span>: idx,</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>            <span class="st">'day'</span>: np.arange(<span class="dv">2</span>, <span class="dv">15</span>),</span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>            <span class="st">'regular_sleep_onset'</span>: regular_sleep_changes_time <span class="op">%</span> <span class="dv">24</span>,</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>            <span class="st">'chang14_sleep_onset'</span>: chang14_sleep_changes_time <span class="op">%</span> <span class="dv">24</span>,</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>            <span class="st">'reading_condition'</span>: reading_condition</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>        sleep_onset_data <span class="op">=</span> pd.concat([sleep_onset_data, pd.DataFrame(data_subset)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mu_values <span class="op">=</span> np.linspace(<span class="fl">17.5</span>, <span class="fl">19.5</span>, <span class="dv">5</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>delta_values <span class="op">=</span> np.linspace(<span class="fl">5.0</span>, <span class="fl">9.0</span>, <span class="dv">5</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>chi_values <span class="op">=</span> np.linspace(<span class="fl">7.0</span>, <span class="fl">11.0</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="884a0951" class="cell" data-execution_count="3">
+<p>we select only those with a sleep duration that is greater than 6.5 hours, leaving us with 61 parameter sets. The distribution of sleep duration is shown below:</p>
+<div id="61c1fe20" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot sleep onset for each idx</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> reading_condition <span class="kw">in</span> [<span class="st">'ebook_first'</span>, <span class="st">'ebook_second'</span>]:</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx <span class="kw">in</span> selected_parameters.index:</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>        plot_data <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'idx'</span>] <span class="op">==</span> idx) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> reading_condition)]</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>        <span class="co"># plt.plot(plot_data['day'], plot_data['sleep_difference'], 'o-', color='tab:blue', alpha=0.5)</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        plt.plot(plot_data[<span class="st">'day'</span>], plot_data[<span class="st">'chang14_sleep_onset'</span>], <span class="st">'o-'</span>, color<span class="op">=</span><span class="st">'tab:blue'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># color first week and second week differently</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> reading_condition <span class="op">==</span> <span class="st">'ebook_first'</span>:</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        plt.axvspan(<span class="dv">2</span>, <span class="dv">7</span>, color<span class="op">=</span><span class="st">'red'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, label<span class="op">=</span><span class="st">'eBook'</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        plt.axvspan(<span class="dv">8</span>, <span class="dv">14</span>, color<span class="op">=</span><span class="st">'green'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, label<span class="op">=</span><span class="st">'Book'</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        plt.axvspan(<span class="dv">2</span>, <span class="dv">7</span>, color<span class="op">=</span><span class="st">'green'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, label<span class="op">=</span><span class="st">'Book'</span>)</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        plt.axvspan(<span class="dv">8</span>, <span class="dv">14</span>, color<span class="op">=</span><span class="st">'red'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, label<span class="op">=</span><span class="st">'eBook'</span>)</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    plt.legend()</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Chang14 bedtime - Regular bedtime (hours)'</span>)</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Day'</span>)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># histogram of sleep sleep time from selected parameters</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sleep_time <span class="op">=</span> selected_parameters[<span class="st">'sleep_time'</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.hist(sleep_time, bins<span class="op">=</span><span class="dv">20</span>, rwidth<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>xticks <span class="op">=</span> np.linspace(<span class="fl">6.5</span>, <span class="fl">8.0</span>, <span class="dv">7</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>plt.xticks(xticks)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Sleep duration (hours)'</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Count'</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Add annotation for the number of selected parameters</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>plt.annotate(<span class="ss">f'N = </span><span class="sc">{</span>selected_parameters<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">'</span>, xy<span class="op">=</span>(<span class="fl">7.85</span>, <span class="dv">8</span>))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-4-output-1.png" width="606" height="429" class="figure-img"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-4-output-2.png" width="597" height="429" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-5-output-1.png" width="581" height="429" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="6bf95eb4" class="cell" data-execution_count="4">
+<p>For each of these parameter sets, we simulate the model under three light schedules: - Regular - Chang14 with eBook on the first week (book on the second week) - Chang14 with eBook on the second week (book on the first week)</p>
+<p>We can analyze the sleep onset for each simulation condition:</p>
+<div id="05a2c559" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>sleep_onset_data[<span class="st">'sleep_difference'</span>] <span class="op">=</span> sleep_onset_data[<span class="st">'chang14_sleep_onset'</span>] <span class="op">-</span> sleep_onset_data[<span class="st">'regular_sleep_onset'</span>]</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the std of sleep difference for each idx and reading condition</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>std_sleep_difference <span class="op">=</span> sleep_onset_data.groupby([<span class="st">'idx'</span>, <span class="st">'reading_condition'</span>]).std().reset_index()</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>std_sleep_difference <span class="op">=</span> std_sleep_difference.rename(columns<span class="op">=</span>{<span class="st">'sleep_difference'</span>: <span class="st">'std_sleep_difference'</span>})</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># keep idx, reading_condition, and std_sleep_difference</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>std_sleep_difference <span class="op">=</span> std_sleep_difference[[<span class="st">'idx'</span>, <span class="st">'reading_condition'</span>, <span class="st">'std_sleep_difference'</span>]]</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the mean of regular sleep onset for each idx and reading condition</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>mean_regular_sleep_onset <span class="op">=</span> sleep_onset_data.groupby([<span class="st">'idx'</span>, <span class="st">'reading_condition'</span>]).mean().reset_index()</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>mean_regular_sleep_onset <span class="op">=</span> mean_regular_sleep_onset.rename(columns<span class="op">=</span>{<span class="st">'regular_sleep_onset'</span>: <span class="st">'mean_regular_sleep_onset'</span>})</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># keep idx, reading_condition, and mean_regular_sleep_onset</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>mean_regular_sleep_onset <span class="op">=</span> mean_regular_sleep_onset[[<span class="st">'idx'</span>, <span class="st">'reading_condition'</span>, <span class="st">'mean_regular_sleep_onset'</span>]]</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># merge the two dataframes</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>sleep_difference_statistics <span class="op">=</span> pd.merge(std_sleep_difference, mean_regular_sleep_onset, on<span class="op">=</span>[<span class="st">'idx'</span>, <span class="st">'reading_condition'</span>])</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>plt.plot(sleep_difference_statistics[<span class="st">'std_sleep_difference'</span>], sleep_difference_statistics[<span class="st">'mean_regular_sleep_onset'</span>], <span class="st">'o'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Stdev of (Chang14 - Regular bedtime)'</span>)</span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Regular sleep bedtime'</span>)</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> sns.color_palette(<span class="st">'tab10'</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, simulation_condition <span class="kw">in</span> <span class="bu">enumerate</span>([<span class="st">'regular'</span>, <span class="st">'ebook_first'</span>, <span class="st">'ebook_second'</span>]):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    plt.figure(idx)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    plot_data <span class="op">=</span> simulation_features[simulation_features[<span class="st">'simulation_condition'</span>] <span class="op">==</span> simulation_condition]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    sns.catplot(x<span class="op">=</span><span class="st">'day'</span>, y<span class="op">=</span><span class="st">'sleep_onset'</span>, data<span class="op">=</span>plot_data, kind<span class="op">=</span><span class="st">'box'</span>, color<span class="op">=</span>colors[idx], showfliers<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    sns.stripplot(x<span class="op">=</span><span class="st">'day'</span>, y<span class="op">=</span><span class="st">'sleep_onset'</span>, data<span class="op">=</span>plot_data, color<span class="op">=</span><span class="st">'black'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, dodge<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> simulation_condition <span class="op">==</span> <span class="st">'ebook_first'</span>:</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        plt.axvspan(<span class="dv">3</span> <span class="op">-</span> <span class="dv">2</span>, <span class="dv">7</span> <span class="op">-</span> <span class="dv">2</span>, color<span class="op">=</span><span class="st">'red'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, label<span class="op">=</span><span class="st">'eBook'</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        plt.axvspan(<span class="dv">9</span> <span class="op">-</span> <span class="dv">2</span>, <span class="dv">13</span> <span class="op">-</span> <span class="dv">2</span>, color<span class="op">=</span><span class="st">'gray'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, label<span class="op">=</span><span class="st">'Book'</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> simulation_condition <span class="op">==</span> <span class="st">'ebook_second'</span>:</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        plt.axvspan(<span class="dv">3</span> <span class="op">-</span> <span class="dv">2</span>, <span class="dv">7</span> <span class="op">-</span> <span class="dv">2</span>, color<span class="op">=</span><span class="st">'gray'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, label<span class="op">=</span><span class="st">'Book'</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        plt.axvspan(<span class="dv">9</span> <span class="op">-</span> <span class="dv">2</span>, <span class="dv">13</span> <span class="op">-</span> <span class="dv">2</span>, color<span class="op">=</span><span class="st">'red'</span>, alpha<span class="op">=</span><span class="fl">0.3</span>, label<span class="op">=</span><span class="st">'eBook'</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    plt.ylim(<span class="fl">21.9</span>, <span class="fl">23.7</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    plt.legend()</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Day'</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'Sleep onset (hours)'</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f"Sleep onset for </span><span class="sc">{</span>simulation_condition<span class="sc">}</span><span class="ss"> condition"</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output cell-output-stderr">
+<pre><code>C:\Users\tavel\AppData\Local\Temp\ipykernel_3296\3439049030.py:14: UserWarning:
+
+No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 672x480 with 0 Axes&gt;</code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-5-output-1.png" width="604" height="429" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-7-output-3.png" width="495" height="490" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 672x480 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-7-output-5.png" width="487" height="490" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 672x480 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-7-output-7.png" width="495" height="490" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="e28b2969" class="cell" data-execution_count="5">
+<p>As expected the regular condition has no change in sleep onset across days (it does between different simulations). For the Chang14 light schedule, we see that the sleep onset varies over the two weeks. When the eBook is on the first week (days 2-6), sleep onset remains relatively constant for that first week. However when reading is done with a book (days 8-12), the sleep onset starts to decrease. On the contrary, when the eBook is on the second week, sleep onset starts to decrease at first (book reading), and then increases (eBook reading).</p>
+<p>There are many parameter sets that have a regular sleep onset that is close or equal to 22 hours (time the lights go off). Those sets tend to have little to no change when simulated under the Chang14 light schedules:</p>
+<div id="83742436" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># histogram of sleep sleep time from selected parameters</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>sleep_time <span class="op">=</span> selected_parameters[<span class="st">'sleep_time'</span>]</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>plt.hist(sleep_time, bins<span class="op">=</span><span class="dv">20</span>, rwidth<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Sleep duration (hours)'</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Count'</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-6-output-1.png" width="577" height="429" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<div id="0169f27f" class="cell" data-execution_count="6">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the difference between day 13 and day 6</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>bedtime_day_6_ebook_first <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)][<span class="st">'chang14_sleep_onset'</span>].to_numpy()</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>bedtime_day_13_ebook_first <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">13</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)][<span class="st">'chang14_sleep_onset'</span>].to_numpy()</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>difference_1 <span class="op">=</span> bedtime_day_6_ebook_first <span class="op">-</span> bedtime_day_13_ebook_first</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>bedtime_day_6_ebook_second <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)][<span class="st">'chang14_sleep_onset'</span>].to_numpy()</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>bedtime_day_13_ebook_second <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">13</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)][<span class="st">'chang14_sleep_onset'</span>].to_numpy()</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>difference_2 <span class="op">=</span> bedtime_day_13_ebook_second <span class="op">-</span> bedtime_day_6_ebook_second</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>difference <span class="op">=</span> np.concatenate([difference_1, difference_2])</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># boxplot of difference</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>sns.boxplot(data<span class="op">=</span>difference <span class="op">*</span> <span class="dv">60</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>sns.stripplot(data<span class="op">=</span>difference <span class="op">*</span> <span class="dv">60</span>, color<span class="op">=</span><span class="st">'black'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'eBook - Book bedtime difference (min)'</span>)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-7-output-1.png" width="585" height="393" class="figure-img"></p>
-</figure>
-</div>
-</div>
-</div>
-<div id="dd626702" class="cell" data-execution_count="7">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ebook bedtimes are day 6 on ebook first and day 13 on ebook second</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ebook_bedtime_1 <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)]</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>ebook_bedtime_2 <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">13</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)]</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>ebook_bedtime <span class="op">=</span> pd.concat([ebook_bedtime_1, ebook_bedtime_2])</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>book_bedtime_1 <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)]</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>book_bedtime_2 <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">13</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)]</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>book_bedtime <span class="op">=</span> pd.concat([book_bedtime_1, book_bedtime_2])</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>data_plot_1 <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'condition'</span>: <span class="st">'eBook'</span>,</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">'sleep_onset'</span>: ebook_bedtime[<span class="st">'chang14_sleep_onset'</span>],</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>data_plot_2 <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">'condition'</span>: <span class="st">'Book'</span>,</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">'sleep_onset'</span>: book_bedtime[<span class="st">'chang14_sleep_onset'</span>],</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>data_plot <span class="op">=</span> pd.concat([data_plot_1, data_plot_2])</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co"># seaborn boxplot showing the dots</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>sns.boxplot(x<span class="op">=</span><span class="st">'condition'</span>, y<span class="op">=</span><span class="st">'sleep_onset'</span>, data<span class="op">=</span>data_plot, showfliers<span class="op">=</span><span class="va">False</span>)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>sns.stripplot(x<span class="op">=</span><span class="st">'condition'</span>, y<span class="op">=</span><span class="st">'sleep_onset'</span>, data<span class="op">=</span>data_plot, color<span class="op">=</span><span class="st">'black'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Bedtime (hours)'</span>)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Reading condition'</span>)</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># for each idx, calculate the avg and std sleep onset for each simulation condition (average across days)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>sleep_onset_data <span class="op">=</span> simulation_features.groupby([<span class="st">'idx'</span>, <span class="st">'simulation_condition'</span>]).agg({<span class="st">'sleep_onset'</span>: [<span class="st">'mean'</span>, <span class="st">'std'</span>]}).reset_index()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>regular_data <span class="op">=</span> sleep_onset_data[sleep_onset_data[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'regular'</span>]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>ebook_first_data <span class="op">=</span> sleep_onset_data[sleep_onset_data[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>ebook_second_data <span class="op">=</span> sleep_onset_data[sleep_onset_data[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>]</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot regular mean vs ebook_first std</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>plt.plot(regular_data[<span class="st">'sleep_onset'</span>][<span class="st">'mean'</span>], ebook_first_data[<span class="st">'sleep_onset'</span>][<span class="st">'std'</span>], <span class="st">'o'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, color<span class="op">=</span><span class="st">'tab:blue'</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>plt.plot(regular_data[<span class="st">'sleep_onset'</span>][<span class="st">'mean'</span>], ebook_second_data[<span class="st">'sleep_onset'</span>][<span class="st">'std'</span>], <span class="st">'o'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>, color<span class="op">=</span><span class="st">'tab:blue'</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Regular schedule sleep onset'</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Stdev of sleep onset across days'</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -477,8 +396,179 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<section id="difference-in-sleep-onset-between-book-and-ebook-days" class="level1">
+<h1>Difference in sleep onset between book and ebook days</h1>
+<p>As in <span class="citation" data-cites="chang2014sleep">[@chang2014sleep]</span>, we plot the sleep latency (<code>sleep_onset - 22.0</code>) for each reading condition on the last day of reading:</p>
+<div id="ecadcfdc" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ebook_bedtime_1 <span class="op">=</span> simulation_features[(simulation_features[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (simulation_features[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)][<span class="st">'sleep_onset'</span>].to_numpy()</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ebook_bedtime_2 <span class="op">=</span> simulation_features[(simulation_features[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">13</span>) <span class="op">&amp;</span> (simulation_features[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)][<span class="st">'sleep_onset'</span>].to_numpy()</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>book_bedtime_1 <span class="op">=</span> simulation_features[(simulation_features[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">12</span>) <span class="op">&amp;</span> (simulation_features[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)][<span class="st">'sleep_onset'</span>].to_numpy()</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>book_bedtime_2 <span class="op">=</span> simulation_features[(simulation_features[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (simulation_features[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)][<span class="st">'sleep_onset'</span>].to_numpy()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>ebook_bedtime <span class="op">=</span> <span class="fl">60.0</span> <span class="op">*</span> (np.concatenate([ebook_bedtime_1, ebook_bedtime_2]) <span class="op">-</span> <span class="fl">22.0</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>book_bedtime <span class="op">=</span> <span class="fl">60.0</span> <span class="op">*</span> (np.concatenate([book_bedtime_1, book_bedtime_2]) <span class="op">-</span> <span class="fl">22.0</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># boxplot of each</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>sns.boxplot(data<span class="op">=</span>[ebook_bedtime, book_bedtime], showfliers<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>sns.stripplot(data<span class="op">=</span>[ebook_bedtime, book_bedtime], color<span class="op">=</span><span class="st">'black'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Sleep latency (min)'</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>plt.xticks([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="st">'eBook'</span>, <span class="st">'Book'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="7">
+<pre><code>([&lt;matplotlib.axis.XTick at 0x2d9f01461d0&gt;,
+  &lt;matplotlib.axis.XTick at 0x2d9f00c1e50&gt;],
+ [Text(0, 0, 'eBook'), Text(1, 0, 'Book')])</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-9-output-2.png" width="585" height="411" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Additionally, we calculate the sleep onset difference (within each simulation) between the last day of each reading condition:</p>
+<div id="73893e0f" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ebook_bedtime_1 <span class="op">=</span> simulation_features[(simulation_features[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (simulation_features[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)][<span class="st">'sleep_onset'</span>].to_numpy()</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>book_bedtime_1 <span class="op">=</span> simulation_features[(simulation_features[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">12</span>) <span class="op">&amp;</span> (simulation_features[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)][<span class="st">'sleep_onset'</span>].to_numpy()</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>difference_1 <span class="op">=</span> ebook_bedtime_1 <span class="op">-</span> book_bedtime_1</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>ebook_bedtime_2 <span class="op">=</span> simulation_features[(simulation_features[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">12</span>) <span class="op">&amp;</span> (simulation_features[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)][<span class="st">'sleep_onset'</span>].to_numpy()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>book_bedtime_2 <span class="op">=</span> simulation_features[(simulation_features[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (simulation_features[<span class="st">'simulation_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)][<span class="st">'sleep_onset'</span>].to_numpy()</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>difference_2 <span class="op">=</span> ebook_bedtime_2 <span class="op">-</span> book_bedtime_2</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># boxplot of difference</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>difference <span class="op">=</span> np.concatenate([difference_1, difference_2])</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>sns.boxplot(data<span class="op">=</span>difference <span class="op">*</span> <span class="dv">60</span>)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>sns.stripplot(data<span class="op">=</span>difference <span class="op">*</span> <span class="dv">60</span>, color<span class="op">=</span><span class="st">'black'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'eBook - Book bedtime difference (min)'</span>)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-10-output-1.png" width="585" height="393" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="phase-shift-between-book-and-ebook-days" class="level1">
+<h1>Phase shift between book and ebook days</h1>
+<div id="6cbbc61a" class="cell" data-execution_count="10">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the difference between day 13 and day 6 for cbtmin</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>ebook_cbtmin_1 <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)][<span class="st">'chang14_cbtmin'</span>].to_numpy()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>ebook_cbtmin_2 <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">13</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_first'</span>)][<span class="st">'chang14_cbtmin'</span>].to_numpy()</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>difference_1 <span class="op">=</span> ebook_cbtmin_1 <span class="op">-</span> ebook_cbtmin_2</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>book_cbtmin_1 <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">6</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)][<span class="st">'chang14_cbtmin'</span>].to_numpy() <span class="op">%</span> <span class="dv">24</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>book_cbtmin_2 <span class="op">=</span> sleep_onset_data[(sleep_onset_data[<span class="st">'day'</span>] <span class="op">==</span> <span class="dv">13</span>) <span class="op">&amp;</span> (sleep_onset_data[<span class="st">'reading_condition'</span>] <span class="op">==</span> <span class="st">'ebook_second'</span>)][<span class="st">'chang14_cbtmin'</span>].to_numpy() <span class="op">%</span> <span class="dv">24</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>difference_2 <span class="op">=</span> book_cbtmin_1 <span class="op">-</span> book_cbtmin_2</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>difference <span class="op">=</span> np.concatenate([difference_1, difference_2])</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co"># seaborn boxplot showing the dots</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>sns.boxplot(data<span class="op">=</span>difference <span class="op">*</span> <span class="dv">60</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>sns.stripplot(data<span class="op">=</span>difference <span class="op">*</span> <span class="dv">60</span>, color<span class="op">=</span><span class="st">'black'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Phase shift as CBTmin difference (min)'</span>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Reading condition'</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="6a8eac2a" class="cell" data-execution_count="11">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> reading_condition <span class="kw">in</span> [<span class="st">'ebook_first'</span>, <span class="st">'ebook_second'</span>]:</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx <span class="kw">in</span> selected_parameters.index:</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>            data <span class="op">=</span> np.load(<span class="ss">f'data/skeldon23_on_chang14/chang14_simulation_</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">.npz'</span>, allow_pickle<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span>:</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>        regular_trajectory <span class="op">=</span> data[<span class="st">'regular_trajectory_states'</span>]</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        chang14_trajectory <span class="op">=</span> data[<span class="ss">f'</span><span class="sc">{</span>reading_condition<span class="sc">}</span><span class="ss">_trajectory_states'</span>]</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        regular_sleep <span class="op">=</span> data[<span class="st">'regular_sleep'</span>]</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        chang14_sleep <span class="op">=</span> data[<span class="ss">f'</span><span class="sc">{</span>reading_condition<span class="sc">}</span><span class="ss">_sleep'</span>]</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>        day_6_idx <span class="op">=</span> np.where((time <span class="op">&lt;</span> <span class="dv">6</span><span class="op">*</span><span class="dv">24</span>) <span class="op">&amp;</span> (time <span class="op">&gt;</span> <span class="dv">5</span><span class="op">*</span><span class="dv">24</span>))[<span class="dv">0</span>]</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>        day_13_idx <span class="op">=</span> np.where((time <span class="op">&lt;</span> <span class="dv">13</span><span class="op">*</span><span class="dv">24</span>) <span class="op">&amp;</span> (time <span class="op">&gt;</span> <span class="dv">12</span><span class="op">*</span><span class="dv">24</span>))[<span class="dv">0</span>]</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        normalized_time <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dv">24</span><span class="op">/</span><span class="bu">len</span>(day_6_idx))</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>        plt.plot(normalized_time, regular_trajectory[day_6_idx, <span class="dv">0</span>], color<span class="op">=</span><span class="st">'tab:blue'</span>)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>        plt.plot(normalized_time, regular_trajectory[day_13_idx, <span class="dv">0</span>], color<span class="op">=</span><span class="st">'tab:blue'</span>)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        plt.plot(normalized_time, regular_sleep[day_6_idx], color<span class="op">=</span><span class="st">'tab:blue'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>        plt.plot(normalized_time, regular_sleep[day_13_idx], color<span class="op">=</span><span class="st">'tab:blue'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> reading_condition <span class="op">==</span> <span class="st">'ebook_first'</span>:</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>            plt.plot(normalized_time, chang14_trajectory[day_6_idx, <span class="dv">0</span>], color<span class="op">=</span><span class="st">'tab:green'</span>)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>            plt.plot(normalized_time, chang14_trajectory[day_13_idx, <span class="dv">0</span>], color<span class="op">=</span><span class="st">'tab:red'</span>)</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>            plt.plot(normalized_time, chang14_trajectory[day_6_idx, <span class="dv">0</span>], color<span class="op">=</span><span class="st">'tab:red'</span>)</span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>            plt.plot(normalized_time, chang14_trajectory[day_13_idx, <span class="dv">0</span>], color<span class="op">=</span><span class="st">'tab:green'</span>)</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    plt.axvspan(<span class="dv">6</span>, <span class="dv">22</span>, color<span class="op">=</span><span class="st">'yellow'</span>, alpha<span class="op">=</span><span class="fl">0.4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="82e3dd1d" class="cell" data-execution_count="12">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx <span class="kw">in</span> selected_parameters.index:</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> np.load(<span class="ss">f'data/skeldon23_on_chang14/chang14_simulation_</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">.npz'</span>, allow_pickle<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span>:</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">continue</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    regular_trajectory <span class="op">=</span> data[<span class="st">'regular_trajectory_states'</span>]</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    chang14_trajectory <span class="op">=</span> data[<span class="ss">f'</span><span class="sc">{</span>reading_condition<span class="sc">}</span><span class="ss">_trajectory_states'</span>]</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    regular_sleep <span class="op">=</span> data[<span class="st">'regular_sleep'</span>]</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    chang14_sleep <span class="op">=</span> data[<span class="ss">f'</span><span class="sc">{</span>reading_condition<span class="sc">}</span><span class="ss">_sleep'</span>]</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    first_week_idx <span class="op">=</span> np.where((time <span class="op">&lt;</span> <span class="dv">14</span><span class="op">*</span><span class="dv">24</span>) <span class="op">&amp;</span> (time <span class="op">&gt;</span> <span class="dv">13</span><span class="op">*</span><span class="dv">24</span>))[<span class="dv">0</span>]</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    normalized_time <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dv">24</span><span class="op">/</span><span class="bu">len</span>(first_week_idx))</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    plt.plot(normalized_time, chang14_trajectory[first_week_idx, <span class="dv">3</span>])</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Day 14'</span>)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Circadian state'</span>)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time (hours)'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="446038ba" class="cell" data-execution_count="13">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx <span class="kw">in</span> selected_parameters.index:</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        data <span class="op">=</span> np.load(<span class="ss">f'data/skeldon23_on_chang14/chang14_simulation_</span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">.npz'</span>, allow_pickle<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span>:</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">continue</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    regular_trajectory <span class="op">=</span> data[<span class="st">'regular_trajectory_states'</span>]</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    chang14_trajectory <span class="op">=</span> data[<span class="ss">f'</span><span class="sc">{</span>reading_condition<span class="sc">}</span><span class="ss">_trajectory_states'</span>]</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    regular_sleep <span class="op">=</span> data[<span class="st">'regular_sleep'</span>]</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    chang14_sleep <span class="op">=</span> data[<span class="ss">f'</span><span class="sc">{</span>reading_condition<span class="sc">}</span><span class="ss">_sleep'</span>]</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    first_week_idx <span class="op">=</span> np.where((time <span class="op">&lt;</span> <span class="dv">14</span><span class="op">*</span><span class="dv">24</span>) <span class="op">&amp;</span> (time <span class="op">&gt;</span> <span class="dv">13</span><span class="op">*</span><span class="dv">24</span>))[<span class="dv">0</span>]</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    normalized_time <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">24</span>, <span class="dv">24</span><span class="op">/</span><span class="bu">len</span>(first_week_idx))</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    plt.plot(normalized_time, chang14_sleep[first_week_idx])</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Day 14'</span>)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Sleep'</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time (hours)'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>So I think I know the reason for these plots, the sleep homeostat only feeds back to the circadian state by changing the light the model receives. Given that we force it to be awake when there’s light, there’s actually no change in light schedule for each simulation and that causes the circadian state to be the same for each simulation. –&gt;</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

@@ -11,15 +11,18 @@ execute:
 {{< include _light_schedules.qmd >}}
 
 ```{python}
+#| echo: false
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from circadian.models import Skeldon23
+from circadian.models import DynamicalTrajectory
 
 time = light_schedule_time #TODO: Clean this up
+model = Skeldon23()
 
-# TODO: Implement these functions on `circadian`
 def circadian_modulation_of_sleep(model, trajectory_states):
     x = trajectory_states[:, 0]
     xc = trajectory_states[:, 1]
@@ -34,11 +37,192 @@ def H_thresholds(model, trajectory_states):
     H_minus = model.H0 - 0.5 * model.Delta + model.ca * C 
     return H_plus, H_minus
 
+def calculate_sleep_onset(data, simulation_condition):
+    # Ignore the last day
+    sleep = data[f'{simulation_condition}_sleep']
+    sleep_onset_idx = np.where(np.diff(sleep) == 1)[0]
+    sleep_onset_time = time[sleep_onset_idx][:-1]
+    return sleep_onset_time
+
+def calculate_cbtmin(data, simulation_condition):
+    # Ignore the last day
+    trajectory = DynamicalTrajectory(time, data[f'{simulation_condition}_trajectory_states'])
+    cbtmin = model.cbt(trajectory)[:-1]
+    return cbtmin
+
 # Load selected parameters
 selected_parameters = pd.read_csv('data/parameter_exploration/selected_parameters.csv', index_col=0)
+```
 
-# Calculate the bedtime for each day
-sleep_onset_data = pd.DataFrame()
+After doing simulations for 125 parameter sets:
+
+```{python}
+#| eval: false
+mu_values = np.linspace(17.5, 19.5, 5)
+delta_values = np.linspace(5.0, 9.0, 5)
+chi_values = np.linspace(7.0, 11.0, 5)
+```
+
+we select only those with a sleep duration that is greater than 6.5 hours, leaving us with `{python} selected_parameters.shape[0]` parameter sets. The distribution of sleep duration is shown below:
+
+```{python}
+# histogram of sleep sleep time from selected parameters
+sleep_time = selected_parameters['sleep_time']
+plt.hist(sleep_time, bins=20, rwidth=0.8)
+xticks = np.linspace(6.5, 8.0, 7)
+plt.xticks(xticks)
+plt.xlabel('Sleep duration (hours)')
+plt.ylabel('Count')
+# Add annotation for the number of selected parameters
+plt.annotate(f'N = {selected_parameters.shape[0]}', xy=(7.85, 8))
+plt.show()
+```
+
+For each of these parameter sets, we simulate the model under three light schedules:
+- Regular
+- Chang14 with eBook on the first week (book on the second week)
+- Chang14 with eBook on the second week (book on the first week)
+
+```{python}
+#| echo: false
+
+simulation_features = pd.DataFrame()
+for idx in selected_parameters.index:
+    data = np.load(f'data/skeldon23_on_chang14/chang14_simulation_{idx}.npz', 
+                    allow_pickle=True)
+
+    regular_sleep_onset = calculate_sleep_onset(data, 'regular')
+    regular_cbtmin = calculate_cbtmin(data, 'regular')
+
+    data_subset = {
+        'idx': idx,
+        'day': np.arange(1, 14),
+        'simulation_condition': 'regular',
+        'sleep_onset': regular_sleep_onset % 24,
+        'cbtmin': regular_cbtmin % 24,
+    }
+
+    simulation_features = pd.concat([simulation_features, pd.DataFrame(data_subset)])
+
+    for reading_condition in ['ebook_first', 'ebook_second']:
+        sleep_onset = calculate_sleep_onset(data, reading_condition)
+        cbtmin = calculate_cbtmin(data, reading_condition)
+        data_subset = {
+            'idx': idx,
+            'day': np.arange(1, 14),
+            'simulation_condition': reading_condition,
+            'sleep_onset': sleep_onset % 24,
+            'cbtmin': cbtmin % 24,
+        }
+
+        simulation_features = pd.concat([simulation_features, pd.DataFrame(data_subset)])
+```
+
+We can analyze the sleep onset for each simulation condition:
+```{python}
+colors = sns.color_palette('tab10')
+for idx, simulation_condition in enumerate(['regular', 'ebook_first', 'ebook_second']):
+    plt.figure(idx)
+    plot_data = simulation_features[simulation_features['simulation_condition'] == simulation_condition]
+    sns.catplot(x='day', y='sleep_onset', data=plot_data, kind='box', color=colors[idx], showfliers=False)
+    sns.stripplot(x='day', y='sleep_onset', data=plot_data, color='black', alpha=0.5, dodge=True)
+    if simulation_condition == 'ebook_first':
+        plt.axvspan(3 - 2, 7 - 2, color='red', alpha=0.3, label='eBook')
+        plt.axvspan(9 - 2, 13 - 2, color='gray', alpha=0.3, label='Book')
+    elif simulation_condition == 'ebook_second':
+        plt.axvspan(3 - 2, 7 - 2, color='gray', alpha=0.3, label='Book')
+        plt.axvspan(9 - 2, 13 - 2, color='red', alpha=0.3, label='eBook')
+    plt.ylim(21.9, 23.7)
+    plt.legend()
+    plt.xlabel('Day')
+    plt.ylabel('Sleep onset (hours)')
+    plt.title(f"Sleep onset for {simulation_condition} condition")
+    plt.show()
+```
+
+As expected the regular condition has no change in sleep onset across days (it does between different simulations). For the Chang14 light schedule, we see that the sleep onset varies over the two weeks. When the eBook is on the first week (days 2-6), sleep onset remains relatively constant for that first week. However when reading is done with a book (days 8-12), the sleep onset starts to decrease. On the contrary, when the eBook is on the second week, sleep onset starts to decrease at first (book reading), and then increases (eBook reading).
+
+There are many parameter sets that have a regular sleep onset that is close or equal to 22 hours (time the lights go off). Those  sets tend to have little to no change when simulated under the Chang14 light schedules:
+
+```{python}
+# for each idx, calculate the avg and std sleep onset for each simulation condition (average across days)
+sleep_onset_data = simulation_features.groupby(['idx', 'simulation_condition']).agg({'sleep_onset': ['mean', 'std']}).reset_index()
+
+regular_data = sleep_onset_data[sleep_onset_data['simulation_condition'] == 'regular']
+ebook_first_data = sleep_onset_data[sleep_onset_data['simulation_condition'] == 'ebook_first']
+ebook_second_data = sleep_onset_data[sleep_onset_data['simulation_condition'] == 'ebook_second']
+# plot regular mean vs ebook_first std
+plt.plot(regular_data['sleep_onset']['mean'], ebook_first_data['sleep_onset']['std'], 'o', alpha=0.5, color='tab:blue')
+plt.plot(regular_data['sleep_onset']['mean'], ebook_second_data['sleep_onset']['std'], 'o', alpha=0.5, color='tab:blue')
+plt.xlabel('Regular schedule sleep onset')
+plt.ylabel('Stdev of sleep onset across days')
+plt.show()
+```
+
+# Difference in sleep onset between book and ebook days
+
+As in [@chang2014sleep], we plot the sleep latency (`sleep_onset - 22.0`) for each reading condition on the last day of reading:
+
+```{python}
+ebook_bedtime_1 = simulation_features[(simulation_features['day'] == 6) & (simulation_features['simulation_condition'] == 'ebook_first')]['sleep_onset'].to_numpy()
+ebook_bedtime_2 = simulation_features[(simulation_features['day'] == 13) & (simulation_features['simulation_condition'] == 'ebook_second')]['sleep_onset'].to_numpy()
+
+book_bedtime_1 = simulation_features[(simulation_features['day'] == 12) & (simulation_features['simulation_condition'] == 'ebook_first')]['sleep_onset'].to_numpy()
+book_bedtime_2 = simulation_features[(simulation_features['day'] == 6) & (simulation_features['simulation_condition'] == 'ebook_second')]['sleep_onset'].to_numpy()
+
+ebook_bedtime = 60.0 * (np.concatenate([ebook_bedtime_1, ebook_bedtime_2]) - 22.0)
+book_bedtime = 60.0 * (np.concatenate([book_bedtime_1, book_bedtime_2]) - 22.0)
+
+# boxplot of each
+sns.boxplot(data=[ebook_bedtime, book_bedtime], showfliers=False)
+sns.stripplot(data=[ebook_bedtime, book_bedtime], color='black', alpha=0.5)
+plt.ylabel('Sleep latency (min)')
+plt.xticks([0, 1], ['eBook', 'Book'])
+```
+
+Additionally, we calculate the sleep onset difference (within each simulation) between the last day of each reading condition:
+```{python}
+ebook_bedtime_1 = simulation_features[(simulation_features['day'] == 6) & (simulation_features['simulation_condition'] == 'ebook_first')]['sleep_onset'].to_numpy()
+book_bedtime_1 = simulation_features[(simulation_features['day'] == 12) & (simulation_features['simulation_condition'] == 'ebook_first')]['sleep_onset'].to_numpy()
+difference_1 = ebook_bedtime_1 - book_bedtime_1
+
+ebook_bedtime_2 = simulation_features[(simulation_features['day'] == 12) & (simulation_features['simulation_condition'] == 'ebook_second')]['sleep_onset'].to_numpy()
+book_bedtime_2 = simulation_features[(simulation_features['day'] == 6) & (simulation_features['simulation_condition'] == 'ebook_second')]['sleep_onset'].to_numpy()
+difference_2 = ebook_bedtime_2 - book_bedtime_2
+
+# boxplot of difference
+difference = np.concatenate([difference_1, difference_2])
+sns.boxplot(data=difference * 60)
+sns.stripplot(data=difference * 60, color='black', alpha=0.5)
+plt.ylabel('eBook - Book bedtime difference (min)')
+plt.show()
+```
+
+# Phase shift between book and ebook days
+
+```{python}
+#| eval: false
+# calculate the difference between day 13 and day 6 for cbtmin
+ebook_cbtmin_1 = sleep_onset_data[(sleep_onset_data['day'] == 6) & (sleep_onset_data['reading_condition'] == 'ebook_first')]['chang14_cbtmin'].to_numpy()
+ebook_cbtmin_2 = sleep_onset_data[(sleep_onset_data['day'] == 13) & (sleep_onset_data['reading_condition'] == 'ebook_first')]['chang14_cbtmin'].to_numpy()
+difference_1 = ebook_cbtmin_1 - ebook_cbtmin_2
+
+book_cbtmin_1 = sleep_onset_data[(sleep_onset_data['day'] == 6) & (sleep_onset_data['reading_condition'] == 'ebook_second')]['chang14_cbtmin'].to_numpy() % 24
+book_cbtmin_2 = sleep_onset_data[(sleep_onset_data['day'] == 13) & (sleep_onset_data['reading_condition'] == 'ebook_second')]['chang14_cbtmin'].to_numpy() % 24
+difference_2 = book_cbtmin_1 - book_cbtmin_2
+
+
+difference = np.concatenate([difference_1, difference_2])
+# seaborn boxplot showing the dots
+sns.boxplot(data=difference * 60)
+sns.stripplot(data=difference * 60, color='black', alpha=0.5)
+plt.ylabel('Phase shift as CBTmin difference (min)')
+plt.xlabel('Reading condition')
+plt.show()
+```
+
+```{python}
+#| eval: false
 for reading_condition in ['ebook_first', 'ebook_second']:
     for idx in selected_parameters.index:
         try:
@@ -46,119 +230,78 @@ for reading_condition in ['ebook_first', 'ebook_second']:
         except:
             continue
 
+        regular_trajectory = data['regular_trajectory_states']
+        chang14_trajectory = data[f'{reading_condition}_trajectory_states']
+
         regular_sleep = data['regular_sleep']
         chang14_sleep = data[f'{reading_condition}_sleep']
 
-        regular_sleep_changes = np.where(np.diff(regular_sleep) == 1)[0]
-        chang14_sleep_changes = np.where(np.diff(chang14_sleep) == 1)[0]
-        regular_sleep_changes_time = time[regular_sleep_changes]
-        chang14_sleep_changes_time = time[chang14_sleep_changes]
+        day_6_idx = np.where((time < 6*24) & (time > 5*24))[0]
+        day_13_idx = np.where((time < 13*24) & (time > 12*24))[0]
+        normalized_time = np.arange(0, 24, 24/len(day_6_idx))
 
-        # don't count last day's sleep onset
-        regular_sleep_changes_time = regular_sleep_changes_time[:-1]
-        chang14_sleep_changes_time = chang14_sleep_changes_time[:-1]
+        plt.plot(normalized_time, regular_trajectory[day_6_idx, 0], color='tab:blue')
+        plt.plot(normalized_time, regular_trajectory[day_13_idx, 0], color='tab:blue')
+        plt.plot(normalized_time, regular_sleep[day_6_idx], color='tab:blue', linestyle='--')
+        plt.plot(normalized_time, regular_sleep[day_13_idx], color='tab:blue', linestyle='--')
+        if reading_condition == 'ebook_first':
+            plt.plot(normalized_time, chang14_trajectory[day_6_idx, 0], color='tab:green')
+            plt.plot(normalized_time, chang14_trajectory[day_13_idx, 0], color='tab:red')
+        else:
+            plt.plot(normalized_time, chang14_trajectory[day_6_idx, 0], color='tab:red')
+            plt.plot(normalized_time, chang14_trajectory[day_13_idx, 0], color='tab:green')
+    plt.axvspan(6, 22, color='yellow', alpha=0.4)
 
-        data_subset = {
-            'idx': idx,
-            'day': np.arange(2, 15),
-            'regular_sleep_onset': regular_sleep_changes_time % 24,
-            'chang14_sleep_onset': chang14_sleep_changes_time % 24,
-            'reading_condition': reading_condition
-        }
-        sleep_onset_data = pd.concat([sleep_onset_data, pd.DataFrame(data_subset)])
 ```
 
 ```{python}
-# Plot sleep onset for each idx
-for reading_condition in ['ebook_first', 'ebook_second']:
-    for idx in selected_parameters.index:
-        plot_data = sleep_onset_data[(sleep_onset_data['idx'] == idx) & (sleep_onset_data['reading_condition'] == reading_condition)]
-        # plt.plot(plot_data['day'], plot_data['sleep_difference'], 'o-', color='tab:blue', alpha=0.5)
-        plt.plot(plot_data['day'], plot_data['chang14_sleep_onset'], 'o-', color='tab:blue', alpha=0.5)
-    # color first week and second week differently
-    if reading_condition == 'ebook_first':
-        plt.axvspan(2, 7, color='red', alpha=0.3, label='eBook')
-        plt.axvspan(8, 14, color='green', alpha=0.3, label='Book')
-    else:
-        plt.axvspan(2, 7, color='green', alpha=0.3, label='Book')
-        plt.axvspan(8, 14, color='red', alpha=0.3, label='eBook')
+#| eval: false
+for idx in selected_parameters.index:
+    try:
+        data = np.load(f'data/skeldon23_on_chang14/chang14_simulation_{idx}.npz', allow_pickle=True)
+    except:
+        continue
 
+    regular_trajectory = data['regular_trajectory_states']
+    chang14_trajectory = data[f'{reading_condition}_trajectory_states']
 
-    plt.legend()
-    plt.ylabel('Chang14 bedtime - Regular bedtime (hours)')
-    plt.xlabel('Day')
-    plt.show()
+    regular_sleep = data['regular_sleep']
+    chang14_sleep = data[f'{reading_condition}_sleep']
+
+    first_week_idx = np.where((time < 14*24) & (time > 13*24))[0]
+    normalized_time = np.arange(0, 24, 24/len(first_week_idx))
+
+    plt.plot(normalized_time, chang14_trajectory[first_week_idx, 3])
+
+plt.title('Day 14')
+plt.ylabel('Circadian state')
+plt.xlabel('Time (hours)')
+
 ```
-
 ```{python}
-sleep_onset_data['sleep_difference'] = sleep_onset_data['chang14_sleep_onset'] - sleep_onset_data['regular_sleep_onset']
-# Calculate the std of sleep difference for each idx and reading condition
-std_sleep_difference = sleep_onset_data.groupby(['idx', 'reading_condition']).std().reset_index()
-std_sleep_difference = std_sleep_difference.rename(columns={'sleep_difference': 'std_sleep_difference'})
-# keep idx, reading_condition, and std_sleep_difference
-std_sleep_difference = std_sleep_difference[['idx', 'reading_condition', 'std_sleep_difference']]
-# calculate the mean of regular sleep onset for each idx and reading condition
-mean_regular_sleep_onset = sleep_onset_data.groupby(['idx', 'reading_condition']).mean().reset_index()
-mean_regular_sleep_onset = mean_regular_sleep_onset.rename(columns={'regular_sleep_onset': 'mean_regular_sleep_onset'})
-# keep idx, reading_condition, and mean_regular_sleep_onset
-mean_regular_sleep_onset = mean_regular_sleep_onset[['idx', 'reading_condition', 'mean_regular_sleep_onset']]
-# merge the two dataframes
-sleep_difference_statistics = pd.merge(std_sleep_difference, mean_regular_sleep_onset, on=['idx', 'reading_condition'])
-plt.plot(sleep_difference_statistics['std_sleep_difference'], sleep_difference_statistics['mean_regular_sleep_onset'], 'o', alpha=0.5)
-plt.xlabel('Stdev of (Chang14 - Regular bedtime)')
-plt.ylabel('Regular sleep bedtime')
-plt.show()
+#| eval: false
+for idx in selected_parameters.index:
+    try:
+        data = np.load(f'data/skeldon23_on_chang14/chang14_simulation_{idx}.npz', allow_pickle=True)
+    except:
+        continue
+
+    regular_trajectory = data['regular_trajectory_states']
+    chang14_trajectory = data[f'{reading_condition}_trajectory_states']
+
+    regular_sleep = data['regular_sleep']
+    chang14_sleep = data[f'{reading_condition}_sleep']
+
+    first_week_idx = np.where((time < 14*24) & (time > 13*24))[0]
+    normalized_time = np.arange(0, 24, 24/len(first_week_idx))
+
+    plt.plot(normalized_time, chang14_sleep[first_week_idx])
+
+plt.title('Day 14')
+plt.ylabel('Sleep')
+plt.xlabel('Time (hours)')
+
 ```
 
-```{python}
-# histogram of sleep sleep time from selected parameters
-sleep_time = selected_parameters['sleep_time']
-plt.hist(sleep_time, bins=20, rwidth=0.8)
-plt.xlabel('Sleep duration (hours)')
-plt.ylabel('Count')
-plt.show()
-```
-
-```{python}
-# calculate the difference between day 13 and day 6
-bedtime_day_6_ebook_first = sleep_onset_data[(sleep_onset_data['day'] == 6) & (sleep_onset_data['reading_condition'] == 'ebook_first')]['chang14_sleep_onset'].to_numpy()
-bedtime_day_13_ebook_first = sleep_onset_data[(sleep_onset_data['day'] == 13) & (sleep_onset_data['reading_condition'] == 'ebook_first')]['chang14_sleep_onset'].to_numpy()
-difference_1 = bedtime_day_6_ebook_first - bedtime_day_13_ebook_first
-
-bedtime_day_6_ebook_second = sleep_onset_data[(sleep_onset_data['day'] == 6) & (sleep_onset_data['reading_condition'] == 'ebook_second')]['chang14_sleep_onset'].to_numpy()
-bedtime_day_13_ebook_second = sleep_onset_data[(sleep_onset_data['day'] == 13) & (sleep_onset_data['reading_condition'] == 'ebook_second')]['chang14_sleep_onset'].to_numpy()
-difference_2 = bedtime_day_13_ebook_second - bedtime_day_6_ebook_second
-
-difference = np.concatenate([difference_1, difference_2])
-
-# boxplot of difference
-sns.boxplot(data=difference * 60)
-sns.stripplot(data=difference * 60, color='black', alpha=0.5)
-plt.ylabel('eBook - Book bedtime difference (min)')
-plt.show()
-```
-
-```{python}
-# ebook bedtimes are day 6 on ebook first and day 13 on ebook second
-ebook_bedtime_1 = sleep_onset_data[(sleep_onset_data['day'] == 6) & (sleep_onset_data['reading_condition'] == 'ebook_first')]
-ebook_bedtime_2 = sleep_onset_data[(sleep_onset_data['day'] == 13) & (sleep_onset_data['reading_condition'] == 'ebook_second')]
-ebook_bedtime = pd.concat([ebook_bedtime_1, ebook_bedtime_2])
-book_bedtime_1 = sleep_onset_data[(sleep_onset_data['day'] == 6) & (sleep_onset_data['reading_condition'] == 'ebook_second')]
-book_bedtime_2 = sleep_onset_data[(sleep_onset_data['day'] == 13) & (sleep_onset_data['reading_condition'] == 'ebook_first')]
-book_bedtime = pd.concat([book_bedtime_1, book_bedtime_2])
-data_plot_1 = pd.DataFrame({
-    'condition': 'eBook',
-    'sleep_onset': ebook_bedtime['chang14_sleep_onset'],
-})
-data_plot_2 = pd.DataFrame({
-    'condition': 'Book',
-    'sleep_onset': book_bedtime['chang14_sleep_onset'],
-})
-data_plot = pd.concat([data_plot_1, data_plot_2])
-# seaborn boxplot showing the dots
-sns.boxplot(x='condition', y='sleep_onset', data=data_plot, showfliers=False)
-sns.stripplot(x='condition', y='sleep_onset', data=data_plot, color='black', alpha=0.5)
-plt.ylabel('Bedtime (hours)')
-plt.xlabel('Reading condition')
-plt.show()
-```
+So I think I know the reason for these plots, the sleep homeostat only feeds back to the circadian state by changing the light the model receives. Given that we force it to be awake when there's light, there's actually no change in light schedule for each simulation and that causes the circadian state to be the same for each simulation.
+-->
