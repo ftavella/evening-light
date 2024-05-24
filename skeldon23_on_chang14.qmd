@@ -54,6 +54,13 @@ def calculate_cbtmin(data, simulation_condition):
 selected_parameters = pd.read_csv('data/parameter_exploration/selected_parameters.csv', index_col=0)
 ```
 
+```{python}
+# calculate the sleep times closest to 7.5 hours
+distance = np.abs(selected_parameters['sleep_time'] - 7.5)
+idx = np.argmin(distance)
+print(selected_parameters.iloc[idx])
+```
+
 We did simulations for 125 parameter sets:
 
 ```{python}
@@ -85,6 +92,8 @@ For each of these parameter sets, we simulate the model under three light schedu
 - Regular
 - Chang14 with eBook on the first week (book on the second week)
 - Chang14 with eBook on the second week (book on the first week)
+
+For all these schedules, there is an 8 hour total darkness region that spans from 10 PM (22:00) to 6 AM (6:00).
 
 ```{python}
 #| echo: false
