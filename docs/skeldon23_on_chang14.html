@@ -263,40 +263,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="d0e28c29" class="cell" data-execution_count="3">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the sleep times closest to 7.5 hours</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>distance <span class="op">=</span> np.<span class="bu">abs</span>(selected_parameters[<span class="st">'sleep_time'</span>] <span class="op">-</span> <span class="fl">7.5</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> np.argmin(distance)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(selected_parameters.iloc[idx])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>mu                    19.000000
-Delta                  6.000000
-chi                   11.000000
-sleep_time             7.505309
-number_of_switches     2.000000
-x_f                   -0.702424
-xc_f                  -0.836284
-n_f                    0.159962
-H_f                   14.506669
-S_f                    1.000000
-Name: 84, dtype: float64</code></pre>
-</div>
-</div>
 <p>We did simulations for 125 parameter sets:</p>
-<div id="eb585d6c" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mu_values <span class="op">=</span> np.linspace(<span class="fl">17.5</span>, <span class="fl">19.5</span>, <span class="dv">5</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>delta_values <span class="op">=</span> np.linspace(<span class="fl">5.0</span>, <span class="fl">9.0</span>, <span class="dv">5</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>chi_values <span class="op">=</span> np.linspace(<span class="fl">7.0</span>, <span class="fl">11.0</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="eecc53b2" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>mu_values <span class="op">=</span> np.linspace(<span class="fl">17.5</span>, <span class="fl">19.5</span>, <span class="dv">5</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>delta_values <span class="op">=</span> np.linspace(<span class="fl">5.0</span>, <span class="fl">9.0</span>, <span class="dv">5</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>chi_values <span class="op">=</span> np.linspace(<span class="fl">7.0</span>, <span class="fl">11.0</span>, <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>we select only those with a sleep duration that is greater than 6.5 hours, leaving us with 61 parameter sets. The distribution of sleep duration is shown below:</p>
-<div id="88bd3396" class="cell" data-execution_count="5">
+<div id="b8079733" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-6-output-1.png" width="581" height="429" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-5-output-1.png" width="581" height="429" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -309,40 +287,40 @@ Name: 84, dtype: float64</code></pre>
 </ul>
 <p>For all these schedules, there is an 8 hour total darkness region that spans from 10 PM (22:00) to 6 AM (6:00).</p>
 <p>We can analyze the sleep onset for each simulation condition:</p>
-<div id="2a2d66f9" class="cell" data-execution_count="7">
+<div id="c877adb4" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-8-output-1.png" width="495" height="490" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-7-output-1.png" width="495" height="490" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="0c3093d0" class="cell" data-execution_count="8">
+<div id="acc9d461" class="cell" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-9-output-1.png" width="487" height="490" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-8-output-1.png" width="487" height="490" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="4b75ae4b" class="cell" data-execution_count="9">
+<div id="59c2fef6" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-10-output-1.png" width="495" height="490" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-9-output-1.png" width="495" height="490" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>As expected the regular condition has no change in sleep onset across days (it does between different simulations). For the Chang14 light schedule, we see that the sleep onset varies over the two weeks. When the eBook is on the first week (days 2-6), sleep onset remains relatively constant for that first week. However when reading is done with a book (days 8-12), the sleep onset starts to decrease. On the contrary, when the eBook is on the second week, sleep onset starts to decrease at first (book reading), and then increases (eBook reading).</p>
 <p>There are many parameter sets that have a regular sleep onset that is close or equal to 22 hours (time the lights go off). Those sets tend to have little to no change when simulated under the Chang14 light schedules:</p>
-<div id="8d0c3459" class="cell" data-execution_count="10">
+<div id="3dfc62f5" class="cell" data-execution_count="9">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-11-output-1.png" width="597" height="429" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-10-output-1.png" width="597" height="429" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -350,21 +328,21 @@ Name: 84, dtype: float64</code></pre>
 <section id="difference-in-sleep-onset-between-book-and-ebook-days" class="level1">
 <h1>Difference in sleep onset between book and ebook days</h1>
 <p>As in <span class="citation" data-cites="chang_evening_2015">[@chang_evening_2015]</span>, we plot the sleep latency (<code>sleep_onset - 22.0</code>) for each reading condition on the last day of reading:</p>
-<div id="1a8b7113" class="cell" data-execution_count="11">
+<div id="e278949e" class="cell" data-execution_count="10">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-12-output-1.png" width="585" height="411" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-11-output-1.png" width="585" height="411" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>Additionally, we calculate the sleep onset difference (within each simulation) between the last day of each reading condition:</p>
-<div id="334015aa" class="cell" data-execution_count="12">
+<div id="893c25c3" class="cell" data-execution_count="11">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-13-output-1.png" width="585" height="393" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-12-output-1.png" width="585" height="393" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -373,27 +351,21 @@ Name: 84, dtype: float64</code></pre>
 <section id="phase-shift-between-book-and-ebook-days" class="level1">
 <h1>Phase shift between book and ebook days</h1>
 <p>Let’s check how different the circadian state is for the different schedules on day 6 (plotting all simulated parameter sets):</p>
-<div id="2351593f" class="cell" data-execution_count="13">
-<div class="cell-output cell-output-stderr">
-<pre><code>E:\Internship-Arcascope\what_evening_light_matters\evening-light\.venv\Lib\site-packages\IPython\core\pylabtools.py:170: UserWarning:
-
-Creating legend with loc="best" can be slow with large amounts of data.
-</code></pre>
-</div>
+<div id="574c9943" class="cell" data-execution_count="12">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-14-output-2.png" width="605" height="449" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-13-output-1.png" width="605" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>It is surprising that there isn’t a spread between circadian states for different parameter sets, they are all on top of each other. On the other hand, if we plot the sleep pressure, we see a spread consistent with the spread in sleep onset times:</p>
-<div id="0cb8ece4" class="cell" data-execution_count="14">
+<div id="06bf8afd" class="cell" data-execution_count="13">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-15-output-1.png" width="589" height="449" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-14-output-1.png" width="589" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -402,25 +374,25 @@ Creating legend with loc="best" can be slow with large amounts of data.
 <p>I think the reason is because of the way the sleep homeostat is implemented. The only way that the sleep homeostat can affect the circadian state is by switching to sleep at a moment when the light is greater than zero. If this happens, the input light to the circadian model goes to zero. However, in these simulations we are forcing the model to be awake when the light is on, so the light schedule is the same for all simulations. This means that the circadian state is the same for all simulations.</p>
 <p>The only thing that can change the circadian state is changing the schedule, which does affect the final result as seen on the circadian state plot.</p>
 <p>Therefore we can only obtain two values for the phase shift between book and eBook days, one for each schedule:</p>
-<div id="8c19dda8" class="cell" data-execution_count="15">
+<div id="91496bd9" class="cell" data-execution_count="14">
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-16-output-1.png" width="605" height="449" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-15-output-1.png" width="605" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="skeldon23_on_chang14_files/figure-html/cell-16-output-2.png" width="605" height="449" class="figure-img"></p>
+<p><img src="skeldon23_on_chang14_files/figure-html/cell-15-output-2.png" width="605" height="449" class="figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>The phase shift (calculated as the CBTmin difference between each condition) is 44.40 min for the eBook first condition and 14.40 min for the eBook second condition.</p>
 <p>Let’s check if this is true for all parameter sets:</p>
-<div id="55d401ae" class="cell" data-execution_count="16">
+<div id="dfb6dc44" class="cell" data-execution_count="15">
 <div class="cell-output cell-output-stdout">
 <pre><code>Condition: ebook_first
 CBTmin time day 6:

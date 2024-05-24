@@ -54,13 +54,6 @@ def calculate_cbtmin(data, simulation_condition):
 selected_parameters = pd.read_csv('data/parameter_exploration/selected_parameters.csv', index_col=0)
 ```
 
-```{python}
-# calculate the sleep times closest to 7.5 hours
-distance = np.abs(selected_parameters['sleep_time'] - 7.5)
-idx = np.argmin(distance)
-print(selected_parameters.iloc[idx])
-```
-
 We did simulations for 125 parameter sets:
 
 ```{python}
