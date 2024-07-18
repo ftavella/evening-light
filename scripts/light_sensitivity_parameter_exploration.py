@@ -1,22 +1,8 @@
 import numpy as np
 import pandas as pd
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 from circadian.models import Skeldon23
 from circadian.lights import LightSchedule
-
-def circadian_modulation_of_sleep(model, trajectory):
-    x = trajectory.states[:, 0]
-    xc = trajectory.states[:, 1]
-    linear_term = model.c20 + model.alpha21 * xc + model.alpha22 * x
-    quadratic_term = model.beta21 * xc * xc + model.beta22 * xc * x + model.beta23 * x * x
-    C = linear_term + quadratic_term
-    return C
-
-def H_thresholds(model, trajectory):
-    C = circadian_modulation_of_sleep(model, trajectory)
-    H_plus = model.H0 + 0.5 * model.Delta + model.ca * C
-    H_minus = model.H0 - 0.5 * model.Delta + model.ca * C 
-    return H_plus, H_minus
 
 # Simulation setup
 dt = 0.005 # hours
@@ -36,7 +22,7 @@ equilibration_light = regular_schedule(equilibration_time)
 simulation_light = regular_schedule(simulation_time)
 
 save_path = "../data/light_sensitivity_parameter_exploration"
-sim_prefix = "light_intensity_parameter_exploration"
+sim_prefix = "light_sensitivity_parameter_exploration"
 
 # Reference homeostat parameters, simulation 84 from homeostat parameter exploration
 mu = 19.0
@@ -44,7 +30,7 @@ delta = 6.0
 chi = 11.0
 
 # Parameters to explore
-p_values = np.logspace(-4, 0, 5)
+p_values = np.linspace(0.2, 1.0, 5)
 k_values = np.linspace(-1.0, 1.0, 5)
 tauc_values = np.linspace(23.5, 24.7, 5)
 
